@@ -1,23 +1,18 @@
-version: '3.8'  # or a later supported version
+version: '3.8'
 
 services:
   jenkins:
-    container_name: jenkins
-    build: ./jenkins
+    image: jenkins/jenkins:lts
+    container_name: jenkins-blueocean
+    user: root
     ports:
-      - '8080:8080'
-      - '443:8443'
-      - '50000:50000'
+      - "8082:8080"  # Mapping port 8082 on host to 8080 in the container
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./jenkins_home:/var/jenkins_home
-  
-  webapp:
-    container_name: webapp
-    build: ./webapp
-    ports:
-      - "80:80"
+      - jenkins-data:/var/jenkins_home  # Persist Jenkins data
+      - "${HOME}:/home"  # Use the full path to your home directory
+      - /var/run/docker.sock:/var/run/docker.sock  # Allows Jenkins to communicate with Docker
+    restart: always  # Ensures the container restarts automatically
 
 volumes:
-  jenkins_data:
+  jenkins-data:
     driver: local
