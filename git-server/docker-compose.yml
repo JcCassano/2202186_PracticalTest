@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins:lts
+    ports:
+      - "8083:8080"  # Map port 8083 on the host to port 8080 in the container
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - $HOME:/home
+    user: root
+    restart: always  # Optional: to restart the container automatically
+
+  gitea:
+    container_name: gitea
+    image: gitea/gitea:latest
+    ports:
+      - "3000:3000"  # Map port 3000 on the host to port 3000 in the container
+      - "222:22"     # Map port 22 on the host to port 22 in the container for SSH
+    volumes:
+      - gitea_data:/data
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    restart: always  # Optional: to restart the container automatically
+
+volumes:
+  jenkins-data:
+  gitea_data:
