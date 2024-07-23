@@ -4,6 +4,8 @@ pipeline {
         // Environment variables if needed
         REPO_URL = 'https://github.com/JcCassano/2202186_PracticalTest.git'
         DEPENDENCY_CHECK_CMD = 'dependency-check --noupdate'
+        SONARQUBE_URL = 'http://127.0.0.1:9000'
+        SONARQUBE_TOKEN = credentials('sonarqube-token') // Make sure to add this in Jenkins credentials
     }
     stages {
         stage('Checkout') {
@@ -24,6 +26,15 @@ pipeline {
                 echo 'Running dependency check...'
                 // Ensure you have the dependency-check tool installed and configured
                 sh "${DEPENDENCY_CHECK_CMD}"
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // Ensure SonarQube Scanner is installed and configured
+                    def scannerHome = tool 'SonarQube Scanner'
+                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=your_project_key -Dsonar.sources=. -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.login=${SONARQUBE_TOKEN}"
+                }
             }
         }
         stage('Test') {
